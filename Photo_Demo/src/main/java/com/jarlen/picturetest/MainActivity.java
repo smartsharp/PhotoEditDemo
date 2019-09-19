@@ -92,7 +92,7 @@ public class MainActivity extends Activity implements OnClickListener
 	OperateUtils operateUtils;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState)
+	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
@@ -108,6 +108,12 @@ public class MainActivity extends Activity implements OnClickListener
 		addPictureFromCameraBtn = (Button) findViewById(R.id.addPictureFromCamera);
 		addPictureFromCameraBtn.setOnClickListener(this);
 		operateUtils = new OperateUtils(this);
+
+		if(!PermissionUtil.isGrantAllPermissions(this)){
+			PermissionUtil.requestAllPermissions(this);
+		}else{
+			Toast.makeText(this, "All permissions granted!", Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override
@@ -150,9 +156,15 @@ public class MainActivity extends Activity implements OnClickListener
 	/* 从相册中获取照片 */
 	private void getPictureFromPhoto()
 	{
-		Intent openphotoIntent = new Intent(Intent.ACTION_PICK);
-		openphotoIntent.setType("image/*");
-		startActivityForResult(openphotoIntent, PHOTO_PICKED_WITH_DATA);
+		Intent intent1 = new Intent(Intent.ACTION_PICK);
+		intent1.setType("image/*");
+
+		//Intent intent1 = new Intent();
+		//intent1.setType("image/*");
+		//intent1.setAction(Intent.ACTION_GET_CONTENT);
+		//intent1.addCategory(Intent.CATEGORY_OPENABLE);
+
+		startActivityForResult(intent1, PHOTO_PICKED_WITH_DATA);
 	}
 
 	/* 从相机中获取照片 */
@@ -269,23 +281,25 @@ public class MainActivity extends Activity implements OnClickListener
 				break;
 
 			case PHOTO_PICKED_WITH_DATA :
+				try {
+					Uri originalUri = data.getData();
+					Log.d("jarlen", "originalUri = " + originalUri);
 
-				Uri originalUri = data.getData();
-				//Log.i("jarlen", "originalUri = "+originalUri);
 
-				String[] filePathColumn = {MediaColumns.DATA};
-				Cursor cursor = MainActivity.this.getContentResolver().query(
-						originalUri, filePathColumn, null, null, null);
-				cursor.moveToFirst();
-				int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-				photoPath = cursor.getString(columnIndex);
-				// 延迟每次延迟10 毫秒 隔1秒执行一次
-				if (content_layout.getWidth() == 0)
-				{
-					timer.schedule(task, 10, 1000);
-				} else
-				{
-					compressed();
+					String[] filePathColumn = {MediaColumns.DATA};
+					Cursor cursor = MainActivity.this.getContentResolver().query(
+							originalUri, filePathColumn, null, null, null);
+					cursor.moveToFirst();
+					int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+					photoPath = cursor.getString(columnIndex);
+					// 延迟每次延迟10 毫秒 隔1秒执行一次
+					if (content_layout.getWidth() == 0) {
+						timer.schedule(task, 10, 1000);
+					} else {
+						compressed();
+					}
+				}catch (Exception e){
+					Log.e("jarlen", "PHOTO_PICKED_WITH_DATA exception "+e);
 				}
 
 				break;

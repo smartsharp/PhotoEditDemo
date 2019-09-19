@@ -4,9 +4,6 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="21" />
 
     <application
         android:allowBackup="true"
@@ -78,10 +75,7 @@
     <uses-permission android:name="android.permission.READ_CALENDAR" />
 
     <!-- 往sdcard中写入数据的权限 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" >
-    </uses-permission>
-    <!-- 在sdcard中创建/删除文件的权限 -->
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" >
-    </uses-permission>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>
